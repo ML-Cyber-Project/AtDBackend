@@ -6,3 +6,8 @@ scikit-learn
 imblearn
 mlflow
 hyperopt
+kagglehub
+seaborn
+matplotlib
+numpy
+imbalanced-learn
