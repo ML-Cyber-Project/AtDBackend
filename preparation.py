@@ -64,11 +64,11 @@ def save_data(features, labels, features_path, labels_path):
 
 
 if __name__ == "__main__":
-    features, labels = load_data('features.csv', 'labels.csv')
-    save_correlation_matrix(features, labels, 'corr_matrix.png')
+    features, labels = load_data('data/features.csv', 'data/labels.csv')
+    save_correlation_matrix(features, labels, 'data/corr_matrix.png')
     
     features = clean_correlated_features(features)
-    save_correlation_matrix(features, labels, 'corr_matrix_cleaned.png')
+    save_correlation_matrix(features, labels, 'data/corr_matrix_cleaned.png')
     
     features_resampled, labels_resampled = resample_data(features, labels)
-    save_data(features_resampled, labels_resampled, 'features_cleaned.csv', 'labels_cleaned.csv')
+    save_data(features_resampled, labels_resampled, 'data/features_cleaned.csv', 'data/labels_cleaned.csv')

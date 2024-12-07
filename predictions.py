@@ -39,8 +39,8 @@ except ImportError:
 mlflow.set_tracking_uri("http://127.0.0.1:8080")
 mlflow.set_experiment("Predictions")
 
-features = pd.read_csv(os.path.abspath('features_cleaned.csv'))
-labels = pd.read_csv(os.path.abspath('labels_cleaned.csv'))
+features = pd.read_csv(os.path.abspath('data/features_cleaned.csv'))
+labels = pd.read_csv(os.path.abspath('data/labels_cleaned.csv'))
 
 # Scale data
 scaler = MinMaxScaler()
