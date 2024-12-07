@@ -1,0 +1,13 @@
+services:
+  backend:
+    image: ghcr.io/ml-cyber-project/atdbackend:main
+    networks:
+      - reverseproxy
+    restart: always
+    labels:
+      traefik.enable: true
+      traefik.http.routers.atdbackend.rule: Host(`atdbackend.docsystem.xyz`)
+
+networks:
+  reverseproxy:
+    external: true
