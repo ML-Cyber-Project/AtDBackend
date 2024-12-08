@@ -1,6 +1,4 @@
 import os
-import time
-from tqdm import tqdm
 
 try:
     import pandas as pd
