@@ -60,8 +60,7 @@ models = {
 
 param_spaces = {
     "Logistic Regression": {
-        'C': hp.loguniform('C', -4, 4),
-        'solver': hp.choice('solver', ['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga'])
+        'C': hp.loguniform('C', -4, 4)
     },
     "Random Forest": {
         'n_estimators': scope.int(hp.quniform('n_estimators', 10, 200, 1)),
