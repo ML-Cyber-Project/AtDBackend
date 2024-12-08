@@ -124,7 +124,7 @@ for name, model in models.items():
         
         result = mlflow.evaluate(
             model=model_uri,
-            data=X_test,
+            data=evalData,
             targets='label',
             model_type='classifier',
             evaluators=['default'],
