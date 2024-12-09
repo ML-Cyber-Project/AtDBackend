@@ -8,15 +8,6 @@ services:
       traefik.enable: true
       traefik.http.routers.atdbackend.rule: Host(`atdbackend.docsystem.xyz`)
 
-  mlflow:
-    image: ghcr.io/mlflow/mlflow:latest
-    networks:
-      - reverseproxy
-    restart: always
-    labels:
-      traefik.enable: true
-      traefik.http.routers.mlflow.rule: Host(`mlflow.docsystem.xyz`)
-
 networks:
   reverseproxy:
     external: true
