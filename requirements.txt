@@ -5,7 +5,7 @@ pandas
 scikit-learn
 imblearn
 mlflow
-hyperopt
+optuna
 kagglehub
 seaborn
 matplotlib
