@@ -95,7 +95,7 @@ for name in models.keys():
     print("Tuning hyperparameters for model", name)
     
     study = optuna.create_study(direction='maximize')
-    study.optimize(lambda trial: objective(trial, name), n_trials=6*len(models[name].get_params()))
+    study.optimize(lambda trial: objective(trial, name), n_trials=20)
     
     best = study.best_params
     model = models[name]
