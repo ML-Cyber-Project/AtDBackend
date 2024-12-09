@@ -33,7 +33,7 @@ except ImportError:
     print("You need to install optuna")
     exit()
 
-mlflow.set_tracking_uri("http://127.0.0.1:8080")
+mlflow.set_tracking_uri("https://mlflow.docsystem.xyz")
 mlflow.set_experiment("Predictions")
 
 features = pd.read_csv(os.path.abspath('data/features_cleaned.csv'))
