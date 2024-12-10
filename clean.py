@@ -37,6 +37,8 @@ def load_and_clean_data(data_path=download_dataset()):
     global_df = global_df.replace([float('-inf'), float('inf')], float('nan')).dropna()
     # drop duplicates
     global_df = global_df.drop_duplicates()
+    # Drop all lines where the label is not BENIGN or does not contains "DoS"
+    global_df = global_df[global_df['Label'].str.contains('DoS') | global_df['Label'].str.contains('BENIGN')]
 
     return global_df
 
