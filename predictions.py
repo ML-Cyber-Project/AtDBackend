@@ -144,6 +144,7 @@ for name in models.keys():
 
 # Save the best model's parameters in a separate mlflow experiment
 mlflow.set_experiment("BestModelParams")
-with mlflow.start_run(run_name="Best Model") as run:
+name = best_model.__class__.__name__
+with mlflow.start_run(run_name=name) as run:
     mlflow.log_params(best_params)
-    mlflow.log_metric("best_accuracy", best_score)
+    mlflow.log_metric("f1", best_score)
