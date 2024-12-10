@@ -32,18 +32,18 @@ good_predictions, bad_predictions = 0, 0
 def predict_row(row: int):
     global good_predictions, bad_predictions
     # Get the row to predict
-    df = X_train.iloc[[row]]
+    df = X_test.iloc[[row]]
 
     prediction = [LABELS_NUM[i] for i in model.predict(df)][0]
 
     # Get its label
     # print(f"[{'OK' if LABELS_NUM[labels.iloc[row].values[0]] == prediction else '--'}] Expected label: {LABELS_NUM[labels.iloc[row].values[0]]}, got label: {prediction}")
 
-    return LABELS_NUM[y_train.iloc[row].values[0]] == prediction
+    return LABELS_NUM[y_test.iloc[row].values[0]] == prediction
 
 while True:
     for i in tqdm(range(10000)):
-        j = random.randint(0, len(X_train) - 1)
+        j = random.randint(0, len(X_test) - 1)
         is_good_prediction = predict_row(j)
         if is_good_prediction:
             good_predictions += 1
