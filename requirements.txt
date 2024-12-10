@@ -2,7 +2,7 @@ fastapi
 pydantic
 uvicorn
 pandas
-scikit-learn
+scikit-learn==1.5.2
 imblearn
 mlflow
 optuna
@@ -11,3 +11,4 @@ seaborn
 matplotlib
 numpy
 imbalanced-learn
+boto3
