@@ -7,6 +7,11 @@ except ImportError:
     print("You need to install pandas")
     exit()
 
+try:
+    import numpy as np
+except ImportError:
+    print("You need to install numpy")
+    exit()
 
 COLUMN_SIMILARITY_THRESHOLD = 95  # Drop columns with more than x% of same data - try 90 ?
 
@@ -30,20 +35,17 @@ def load_and_clean_data(data_path=download_dataset()):
     columns_to_drop = columns_to_drop.drop('Label')
     global_df = global_df.drop(columns=columns_to_drop)
     global_df = global_df.replace([float('-inf'), float('inf')], float('nan')).dropna()
+    # drop duplicates
+    global_df = global_df.drop_duplicates()
 
     return global_df
 
-
-def replace_labels_with_indices(global_df):
-    LABELS_NUM = ['BENIGN', 'Infiltration', 'Bot', 'PortScan', 'DDoS', 'FTP-Patator', 'SSH-Patator', 'DoS slowloris', 'DoS Slowhttptest', 'DoS Hulk', 'DoS GoldenEye', 'Heartbleed', 'Web Attack � Brute Force', 'Web Attack � XSS', 'Web Attack � Sql Injection']
-    global_df['Label'] = global_df['Label'].apply(lambda x: LABELS_NUM.index(x))
-    print("Labels:")
-    print(global_df['Label'].unique())
-    return global_df
 
 
 def save_features_and_labels(global_df, features_path='data/features.csv', labels_path='data/labels.csv'):
     # Separate label column from features
+    global_df['Label'] = np.where(global_df['Label'].isin(['BENIGN']), 0, 1)
+    print("Labels count : ", global_df['Label'].value_counts())
     labels = global_df['Label']
     features = global_df.drop(columns=['Label'])
 
@@ -62,5 +64,4 @@ def save_features_and_labels(global_df, features_path='data/features.csv', label
 
 if __name__ == "__main__":
     global_df = load_and_clean_data()
-    global_df = replace_labels_with_indices(global_df)
     save_features_and_labels(global_df)

@@ -54,7 +54,7 @@ def clean_correlated_features(df, threshold=0.9):
     return df.drop(columns=to_drop)
 
 def resample_data(features, labels):
-    rus = RandomUnderSampler(random_state=42, sampling_strategy="majority")
+    rus = RandomUnderSampler(random_state=17, sampling_strategy='majority')
     features_resampled, labels_resampled = rus.fit_resample(features, labels)
     return features_resampled, labels_resampled
 
@@ -67,8 +67,10 @@ if __name__ == "__main__":
     features, labels = load_data('data/features.csv', 'data/labels.csv')
     save_correlation_matrix(features, labels, 'data/corr_matrix.png')
     
+    features_resampled, labels_resampled = resample_data(features, labels)
+    save_correlation_matrix(features_resampled, labels_resampled, 'data/corr_matrix_resampled.png')
+
     features = clean_correlated_features(features)
     save_correlation_matrix(features, labels, 'data/corr_matrix_cleaned.png')
     
-    features_resampled, labels_resampled = resample_data(features, labels)
     save_data(features_resampled, labels_resampled, 'data/features_cleaned.csv', 'data/labels_cleaned.csv')
