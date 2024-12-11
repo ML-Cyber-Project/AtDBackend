@@ -8,15 +8,14 @@ from sklearn.metrics import classification_report, f1_score
 
 mlflow.set_tracking_uri("https://mlflow.docsystem.xyz")
 # load each models in the RandomSearch experiment
-IS_RANDOM_TREE = False
-model = mlflow.sklearn.load_model("runs:/9e46b9644e964ebe88403ec61e0e4a0e/model")
+IS_RANDOM_TREE = True
+model = mlflow.sklearn.load_model("runs:/c0147219bacd4e92bb09477869eb452d/model")
 
 LABELS_NUM = ["BENIGN", "SUS"]
 
 
 # Load data/features_cleaned.csv and data/labels_cleaned.csv
 features = pd.read_csv("data/features_cleaned.csv")
-features = features.astype(float)
 labels = pd.read_csv("data/labels_cleaned.csv")
 
 X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.3, random_state=25)
