@@ -19,7 +19,7 @@ try:
     from sklearn.ensemble import RandomForestClassifier
     from sklearn.neighbors import KNeighborsClassifier
     from sklearn.tree import DecisionTreeClassifier
-    from sklearn.metrics import classification_report, f1_score
+    from sklearn.metrics import classification_report, f1_score, precision_score, recall_score, roc_auc_score
     # from sklearn.model_selection import StratifiedKFold
 except ImportError:
     print("You need to install scikit-learn")
@@ -46,21 +46,18 @@ labels = pd.read_csv(os.path.abspath('data/labels_cleaned.csv'))
 
 X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.3, random_state=25)
 
-# Scale data
-scaler = StandardScaler()
-X_train = scaler.fit_transform(X_train)
-X_test = scaler.transform(X_test)
+# reset index
+X_train = X_train.reset_index(drop=True)
+y_train = y_train.reset_index(drop=True)
+X_test = X_test.reset_index(drop=True)
+y_test = y_test.reset_index(drop=True)
 
-# convert to DataFrame
-X_train = pd.DataFrame(X_train, columns=features.columns)
-X_test = pd.DataFrame(X_test, columns=features.columns)
-
-# skf = StratifiedKFold(n_splits=NUM_FOLDS, shuffle=True, random_state=34)
-# skf.get_n_splits(X_train, y_train)
+evalData = X_test.copy()
+evalData['label'] = y_test
 
 models = {
-    "Logistic Regression": LogisticRegression(max_iter=3000),
     "Random Forest": RandomForestClassifier(),
+    "Logistic Regression": LogisticRegression(max_iter=3000),
     "KNN": KNeighborsClassifier(),
     "Decision Tree": DecisionTreeClassifier(),
 }
@@ -83,14 +80,9 @@ param_distributions = {
     }
 }
 
-# reset index
-X_train = X_train.reset_index(drop=True)
-y_train = y_train.reset_index(drop=True)
-X_test = X_test.reset_index(drop=True)
-y_test = y_test.reset_index(drop=True)
 
-evalData = X_test.copy()
-evalData['label'] = y_test
+# save the y_test and X_test in a csv file (DEBUG DON'T UNCOMMENT)
+# evalData.to_csv('data/evalData.csv', index=False)
 
 best_model = None
 best_score = float('-inf')
@@ -101,6 +93,15 @@ for name in models.keys():
     
     model = models[name]
     param_dist = param_distributions[name]
+    
+    if name != "Random Forest":
+        # Scale data
+        scaler = StandardScaler()
+        X_train_scaled = scaler.fit_transform(X_train)
+        X_test_scaled = scaler.transform(X_test)
+    else:
+        X_train_scaled = X_train
+        X_test_scaled = X_test
     
     def scoringfunc(estimator, X, y):
         return f1_score(y, estimator.predict(X))
@@ -116,30 +117,27 @@ for name in models.keys():
         verbose=3
     )
     
-    randomized_search.fit(X_train, y_train.values.ravel())
+    randomized_search.fit(X_train_scaled, y_train.values.ravel())
     
     best = randomized_search.best_params_
     model.set_params(**best)
-    model.fit(X_train, y_train.values.ravel())
+    model.fit(X_train_scaled, y_train.values.ravel())
     
     if DEBUG:
-        print(classification_report(y_test, model.predict(X_test)))
+        print(classification_report(y_test, model.predict(X_test_scaled)))
 
-    f1_test = f1_score(y_test, model.predict(X_test))
+    f1_test = f1_score(y_test, model.predict(X_test_scaled))
     
-    signature = infer_signature(X_train, model.predict(X_train))
+    signature = infer_signature(X_train_scaled, model.predict(X_train_scaled))
     
     with mlflow.start_run(run_name=name) as run:
         mlflow.log_params(best)
         mlflow.sklearn.log_model(model, "model", signature=signature)
-
-        mlflow.evaluate(
-            model="runs:/" + run.info.run_id + "/model",
-            data=evalData,
-            targets='label',
-            model_type='classifier',
-            evaluators=['default'],
-        )
+        mlflow.log_metric("F1_Score", f1_test)
+        mlflow.log_metric("Accuracy", model.score(X_test_scaled, y_test))
+        mlflow.log_metric("Precision", precision_score(y_test, model.predict(X_test_scaled)))
+        mlflow.log_metric("Recall", recall_score(y_test, model.predict(X_test_scaled)))
+        mlflow.log_metric("AUC", roc_auc_score(y_test, model.predict_proba(X_test_scaled)[:, 1]))
         
         if f1_test > best_score:
             best_score = f1_test

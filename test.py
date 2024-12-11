@@ -8,7 +8,8 @@ from sklearn.metrics import classification_report, f1_score
 
 mlflow.set_tracking_uri("https://mlflow.docsystem.xyz")
 # load each models in the RandomSearch experiment
-model = mlflow.sklearn.load_model("runs:/12498379aa574e01b6da4cff313479dd/model")
+IS_RANDOM_TREE = False
+model = mlflow.sklearn.load_model("runs:/9e46b9644e964ebe88403ec61e0e4a0e/model")
 
 LABELS_NUM = ["BENIGN", "SUS"]
 
@@ -21,9 +22,10 @@ labels = pd.read_csv("data/labels_cleaned.csv")
 X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.3, random_state=25)
 
 # Scale data
-scaler = StandardScaler()
-X_train = scaler.fit_transform(X_train)
-X_test = scaler.transform(X_test)
+if not IS_RANDOM_TREE:
+    scaler = StandardScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
 
 # convert to DataFrame
 X_train = pd.DataFrame(X_train, columns=features.columns)
@@ -34,6 +36,8 @@ y_train = y_train.reset_index(drop=True)
 X_test = X_test.reset_index(drop=True)
 y_test = y_test.reset_index(drop=True)
 
+# evalData = X_test.copy()
+# evalData['label'] = y_test
 
 # calculate the model's metrics
 def calculate_metrics():
