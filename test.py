@@ -4,9 +4,11 @@ from tqdm import tqdm
 import random
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import classification_report, f1_score
 
 mlflow.set_tracking_uri("https://mlflow.docsystem.xyz")
-model = mlflow.pyfunc.load_model(model_uri="models:/attackdetection/latest")
+# load each models in the RandomSearch experiment
+model = mlflow.sklearn.load_model("runs:/12498379aa574e01b6da4cff313479dd/model")
 
 LABELS_NUM = ["BENIGN", "SUS"]
 
@@ -27,6 +29,21 @@ X_test = scaler.transform(X_test)
 X_train = pd.DataFrame(X_train, columns=features.columns)
 X_test = pd.DataFrame(X_test, columns=features.columns)
 
+X_train = X_train.reset_index(drop=True)
+y_train = y_train.reset_index(drop=True)
+X_test = X_test.reset_index(drop=True)
+y_test = y_test.reset_index(drop=True)
+
+
+# calculate the model's metrics
+def calculate_metrics():
+    y_pred = model.predict(X_test)
+    print(classification_report(y_test, y_pred))
+
+    print(f1_score(y_test, y_pred))
+
+calculate_metrics()
+
 good_predictions, bad_predictions = 0, 0
 
 def predict_row(row: int):
@@ -41,7 +58,7 @@ def predict_row(row: int):
 
     return LABELS_NUM[y_test.iloc[row].values[0]] == prediction
 
-while True:
+while False:
     for i in tqdm(range(10000)):
         j = random.randint(0, len(X_test) - 1)
         is_good_prediction = predict_row(j)

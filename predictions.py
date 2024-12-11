@@ -19,7 +19,7 @@ try:
     from sklearn.ensemble import RandomForestClassifier
     from sklearn.neighbors import KNeighborsClassifier
     from sklearn.tree import DecisionTreeClassifier
-    from sklearn.metrics import accuracy_score, f1_score
+    from sklearn.metrics import classification_report, f1_score
     # from sklearn.model_selection import StratifiedKFold
 except ImportError:
     print("You need to install scikit-learn")
@@ -102,11 +102,14 @@ for name in models.keys():
     model = models[name]
     param_dist = param_distributions[name]
     
+    def scoringfunc(estimator, X, y):
+        return f1_score(y, estimator.predict(X))
+    
     randomized_search = RandomizedSearchCV(
         estimator=model,
         param_distributions=param_dist,
         n_iter=NUM_TRIALS,
-        scoring='f1',
+        scoring=scoringfunc,
         cv=3,
         random_state=42,
         n_jobs=-1,
@@ -119,7 +122,9 @@ for name in models.keys():
     model.set_params(**best)
     model.fit(X_train, y_train.values.ravel())
     
-    train_accuracy = accuracy_score(y_train, model.predict(X_train))
+    if DEBUG:
+        print(classification_report(y_test, model.predict(X_test)))
+
     f1_test = f1_score(y_test, model.predict(X_test))
     
     signature = infer_signature(X_train, model.predict(X_train))
@@ -127,10 +132,9 @@ for name in models.keys():
     with mlflow.start_run(run_name=name) as run:
         mlflow.log_params(best)
         mlflow.sklearn.log_model(model, "model", signature=signature)
-        model_uri = mlflow.get_artifact_uri("model")
-        
+
         mlflow.evaluate(
-            model=model_uri,
+            model="runs:/" + run.info.run_id + "/model",
             data=evalData,
             targets='label',
             model_type='classifier',
