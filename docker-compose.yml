@@ -10,7 +10,7 @@ services:
       AWS_ENDPOINT_URL: ${AWS_ENDPOINT_URL:?AWS_ENDPOINT_URL is required}
     labels:
       traefik.enable: true
-      traefik.http.routers.atdbackend.rule: Host(`atdbackend.docsystem.xyz`)
+      traefik.http.routers.atdbackend.rule: Host(`attackdetection.docsystem.xyz`)
 
 networks:
   reverseproxy:
