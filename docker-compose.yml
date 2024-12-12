@@ -4,6 +4,10 @@ services:
     networks:
       - reverseproxy
     restart: always
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:?AWS_ACCESS_KEY_ID is required}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:?AWS_SECRET_ACCESS_KEY is required}
+      AWS_ENDPOINT_URL: ${AWS_ENDPOINT_URL:?AWS_ENDPOINT_URL is required}
     labels:
       traefik.enable: true
       traefik.http.routers.atdbackend.rule: Host(`atdbackend.docsystem.xyz`)
