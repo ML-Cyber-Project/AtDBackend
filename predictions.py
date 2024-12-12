@@ -20,7 +20,6 @@ try:
     from sklearn.neighbors import KNeighborsClassifier
     from sklearn.tree import DecisionTreeClassifier
     from sklearn.metrics import classification_report, f1_score, precision_score, recall_score, roc_auc_score
-    # from sklearn.model_selection import StratifiedKFold
 except ImportError:
     print("You need to install scikit-learn")
     exit()
@@ -34,9 +33,7 @@ except ImportError:
     exit()
 
 NUM_TRIALS = 5
-NUM_FOLDS = 4
-DEBUG = True
-
+DEBUG = False
 IS_PROD = True
 mlflow.set_tracking_uri("https://mlflow.docsystem.xyz" if IS_PROD else "http://127.0.0.1:8080")
 mlflow.set_experiment("RandomSearch")
@@ -51,9 +48,6 @@ X_train = X_train.reset_index(drop=True)
 y_train = y_train.reset_index(drop=True)
 X_test = X_test.reset_index(drop=True)
 y_test = y_test.reset_index(drop=True)
-
-evalData = X_test.copy()
-evalData['label'] = y_test
 
 models = {
     "Random Forest": RandomForestClassifier(),
@@ -79,10 +73,6 @@ param_distributions = {
         'min_samples_split': np.arange(2, 21),
     }
 }
-
-
-# save the y_test and X_test in a csv file (DEBUG DON'T UNCOMMENT)
-# evalData.to_csv('data/evalData.csv', index=False)
 
 best_model = None
 best_score = float('-inf')

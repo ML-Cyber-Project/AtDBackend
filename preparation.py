@@ -45,6 +45,11 @@ def save_correlation_matrix(df, labels, filename):
     plt.savefig(filename)
     print(f"Correlation matrix saved to {filename}")
 
+def resample_data(features, labels):
+    rus = RandomUnderSampler(random_state=17, sampling_strategy='majority')
+    features_resampled, labels_resampled = rus.fit_resample(features, labels)
+    return features_resampled, labels_resampled
+
 def clean_correlated_features(df, threshold=0.9):
     corr_matrix = df.corr().abs()
     # Create the upper triangle of the correlation matrix (no need to keep the lower triangle and diagonal)
@@ -52,11 +57,6 @@ def clean_correlated_features(df, threshold=0.9):
     # Select columns with correlations above threshold
     to_drop = [column for column in upper.columns if any(upper[column] > threshold)]
     return df.drop(columns=to_drop)
-
-def resample_data(features, labels):
-    rus = RandomUnderSampler(random_state=17, sampling_strategy='majority')
-    features_resampled, labels_resampled = rus.fit_resample(features, labels)
-    return features_resampled, labels_resampled
 
 def save_data(features, labels, features_path, labels_path):
     features.to_csv(features_path, index=False)
