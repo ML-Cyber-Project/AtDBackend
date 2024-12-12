@@ -3,7 +3,6 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import mlflow
 import pandas as pd
-from sklearn.preprocessing import StandardScaler
 
 mlflow.set_tracking_uri("https://mlflow.docsystem.xyz")
 

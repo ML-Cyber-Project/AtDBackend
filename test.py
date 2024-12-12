@@ -1,12 +1,40 @@
-import mlflow
-import pandas as pd
-from tqdm import tqdm
-import random
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import classification_report, f1_score, confusion_matrix
-import seaborn as sns
-import matplotlib.pyplot as plt
+try:
+    import mlflow
+except ImportError:
+    print("You need to install mlflow")
+    exit()
+
+try:
+    import pandas as pd
+except ImportError:
+    print("You need to install pandas")
+    exit()
+
+try:
+    from tqdm import tqdm
+except ImportError:
+    print("You need to install tqdm")
+    exit()
+
+try:
+    from sklearn.model_selection import train_test_split
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.metrics import classification_report, f1_score, confusion_matrix
+except ImportError:
+    print("You need to install scikit-learn")
+    exit()
+
+try:
+    import seaborn as sns
+except ImportError:
+    print("You need to install seaborn")
+    exit()
+
+try:
+    import matplotlib.pyplot as plt
+except ImportError:
+    print("You need to install matplotlib")
+    exit()
 
 mlflow.set_tracking_uri("https://mlflow.docsystem.xyz")
 # load each models in the RandomSearch experiment
@@ -14,7 +42,6 @@ IS_RANDOM_TREE = True
 model = mlflow.sklearn.load_model("runs:/c0147219bacd4e92bb09477869eb452d/model")
 
 LABELS_NUM = ["BENIGN", "DoS"]
-
 
 # Load data/features_cleaned.csv and data/labels_cleaned.csv
 features = pd.read_csv("data/features_cleaned.csv")
