@@ -4,14 +4,16 @@ from tqdm import tqdm
 import random
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import classification_report, f1_score
+from sklearn.metrics import classification_report, f1_score, confusion_matrix
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 mlflow.set_tracking_uri("https://mlflow.docsystem.xyz")
 # load each models in the RandomSearch experiment
 IS_RANDOM_TREE = True
 model = mlflow.sklearn.load_model("runs:/c0147219bacd4e92bb09477869eb452d/model")
 
-LABELS_NUM = ["BENIGN", "SUS"]
+LABELS_NUM = ["BENIGN", "DoS"]
 
 
 # Load data/features_cleaned.csv and data/labels_cleaned.csv
@@ -79,3 +81,16 @@ response = requests.post('http://localhost:8000/reports/', json=data)
 
 print(response.json())
 """
+
+def save_confusion_matrix(filename="confusion_matrix.png"):
+    y_pred = model.predict(X_test)
+    cm = confusion_matrix(y_test, y_pred, labels=[0, 1])
+    plt.figure(figsize=(10, 7))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=LABELS_NUM, yticklabels=LABELS_NUM)
+    plt.xlabel('Predicted')
+    plt.ylabel('Actual')
+    plt.title('Confusion Matrix')
+    plt.savefig(filename)
+    plt.close()
+
+save_confusion_matrix()
